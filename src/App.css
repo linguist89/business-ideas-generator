@@ -1,0 +1,48 @@
+.App {
+  display: grid;
+  grid-template-columns: repeat(2, 6fr);
+  column-gap: 1%;
+  row-gap: 1%;
+  padding: 1% 10% 50px 10%;
+  padding-top: 25vh;
+}
+
+.AppButtonDiv {
+  display: grid;
+  grid-template-columns: 12fr;
+  justify-items: center;
+  padding-top: 10px;
+}
+
+.ResultsTable {
+  padding: 50px 10% 50px 10%;
+}
+
+.HeadingText {
+  text-align: center;
+  padding: 10px 10% 50px 10%;
+}
+
+h1 {
+  font-size: 3.2vw;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 2vw;
+}
+
+@media (max-width: 480px) {
+  .App {
+    grid-template-columns: repeat(1, 1fr);
+    padding: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .App {
+    grid-template-columns: repeat(1, 12fr);
+  }
+}
+
+

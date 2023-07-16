@@ -1,0 +1,55 @@
+.ResultsTable {
+    width: 100%;
+    font-size: 1rem;
+}
+
+.ResultsTable table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ResultsTable th, .ResultsTable td {
+    font-weight: normal;
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.responsiveTable tbody tr {
+    border: none;
+}
+
+.ResultsTable th {
+    font-weight: bold;
+    background-color: #0e7490; /* Light blue background for headers */
+    color: white;
+}
+
+.ResultsTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Remove outer borders */
+.ResultsTable tr:first-child th {
+    border-top: none;
+}
+
+.ResultsTable tr:last-child td {
+    border-bottom: none;
+}
+
+.ResultsTable th:first-child, .ResultsTable td:first-child {
+    border-left: none;
+}
+
+.ResultsTable th:last-child, .ResultsTable td:last-child {
+    border-right: none;
+}
+
+.ResultsTable td:first-child, .ResultsTable th:first-child {
+    font-weight: bold;
+}
