@@ -20,7 +20,7 @@ function Header() {
   return (
     <header className="header">
       <div className="logo">
-        <img src={HeaderImage} />
+        <img src={HeaderImage} alt="Business Ideas logo"/>
       </div>
       <div className="text-block">
         <h1>Business Ideas Generator</h1>

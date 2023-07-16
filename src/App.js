@@ -7,8 +7,7 @@ import ResultsTable from './ResultsTable';
 import Header from './Header';
 import Spinner from './Spinner';
 import { Button } from 'flowbite-react';
-import { db, auth } from './Firebase.js';
-import { onAuthStateChanged } from "firebase/auth";
+import { db } from './Firebase.js';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 
 export const UserContext = React.createContext(null);
@@ -40,6 +39,7 @@ function App() {
         businessIdeas();
       }
     }
+  // eslint-disable-next-line
   }, [backgroundTasks, businessIdeasTaskId]);
 
   React.useEffect(() => {

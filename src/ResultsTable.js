@@ -59,6 +59,7 @@ function ResultsTable({ products }) {
         }
       
         return () => unsubscribe && unsubscribe();
+      // eslint-disable-next-line
       }, [productsTaskId]);
 
       function contextButtonShow(index) {
