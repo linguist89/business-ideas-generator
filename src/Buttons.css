@@ -10,12 +10,12 @@
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    background-color: #291A3E;
+    background-color: transparent;
     color: #ffffff;
   }
   
   .transparent-button:hover {
-    background-color: #35254A;
+    background-color: #153c49;
     border-color: #ffffff;
     color: #ffffff;
   }

@@ -13,6 +13,7 @@ export default function DefaultModal({ content, title }) {
         <Modal.Body>
           <Tabs.Group
             aria-label="Context Tabs"
+            // eslint-disable-next-line
             style="underline"
           >
             <Tabs.Item active title="Main Priority">

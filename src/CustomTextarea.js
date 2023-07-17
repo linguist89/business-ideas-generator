@@ -5,6 +5,7 @@ function CustomTextarea({ instructions, placeholder, infoSetter, defaultValue  }
 
     React.useEffect(() => {
       infoSetter(defaultValue);
+      // eslint-disable-next-line
     }, []);
 
   return (
