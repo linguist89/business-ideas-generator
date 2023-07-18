@@ -26,7 +26,7 @@
   }
   
   .transparent-button:active {
-    background-color: #35254A;
+    background-color: #153c49;
   }
   
   .transparent-button:disabled {
@@ -51,13 +51,13 @@
     vertical-align: middle;
     cursor: pointer;
     background-color: #ffffff;
-    color: #291A3E;
+    color: #1F5668;
   }
   
   .solid-button:hover {
     background-color: #dad7d7;
     border-color: #dad7d7;
-    color: #291A3E;
+    color: #1F5668;
   }
   
   .solid-button:focus {
@@ -66,7 +66,7 @@
   }
   
   .solid-button:active {
-    background-color: #35254A;
+    background-color: #153c49;
     color: #ffffff;
   }
   
@@ -90,13 +90,13 @@
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    background-color: #291A3E;
+    background-color: #1F5668;
     color: #ffffff;
   }
   
   .solid-card-button:hover {
-    background-color: #35254A;
-    border-color: #35254A;
+    background-color: #153c49;
+    border-color: #153c49;
     color: #ffffff;
   }
   
@@ -106,7 +106,7 @@
   }
   
   .solid-card-button:active {
-    background-color: #35254A;
+    background-color: #153c49;
   }
   
   .solid-card-button:disabled {
@@ -120,7 +120,7 @@
   
   .transparent-purple-button {
     display: inline-block;
-    border: 1px solid #291A3E;
+    border: 1px solid #1F5668;
     border-radius: 0.4rem;
     padding: 0.5rem 1rem;
     font-size: 1rem;
@@ -131,13 +131,13 @@
     vertical-align: middle;
     cursor: pointer;
     background-color: transparent;
-    color: #291A3E;
+    color: #1F5668;
   }
   
   .transparent-purple-button:hover {
     background-color: transparent;
-    border-color: #291A3E;
-    color: #291A3E;
+    border-color: #1F5668;
+    color: #1F5668;
   }
   
   .transparent-purple-button:focus {

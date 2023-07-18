@@ -1,10 +1,12 @@
 .App {
   display: grid;
-  grid-template-columns: repeat(2, 6fr);
+  grid-template-columns: 12fr;
   column-gap: 1%;
   row-gap: 1%;
   padding: 1% 10% 50px 10%;
   padding-top: 25vh;
+  width: 50%;
+  justify-content: center;
 }
 
 .AppButtonDiv {

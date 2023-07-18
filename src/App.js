@@ -6,9 +6,9 @@ import { getBusinessIdeas } from './HelperFunctions';
 import ResultsTable from './ResultsTable';
 import Header from './Header';
 import Spinner from './Spinner';
-import { Button } from 'flowbite-react';
 import { db } from './Firebase.js';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
+import './Buttons.css';
 
 export const UserContext = React.createContext(null);
 
@@ -69,7 +69,7 @@ function App() {
   async function businessIdeas() {
     setIdeasLoading(true);
     setIdeaResults([]);
-    const string_output = `${entrepreneurType} SPLIT${focus} SPLIT${trends} SPLIT${cv}`
+    const string_output = `${focus} SPLIT${trends} SPLIT${cv}`
     const task = await getBusinessIdeas(string_output);
     if (task['status'] === "OK") {
       setBusinessIdeasTaskId(task['content'][0]);
@@ -84,35 +84,30 @@ function App() {
       <Header></Header>
       <div className="App">
         <CustomTextarea
-          instructions="What type of entrepreneur?"
-          placeholder="What type of entrepreneur?"
-          infoSetter={setEntrepreneurType}
-          defaultValue="Technopreneur"
-        ></CustomTextarea>
-        <CustomTextarea
-          instructions="What is your focus?"
-          placeholder="What is your focus?"
+          instructions="What is your idea?"
+          placeholder="What is your idea?"
           infoSetter={setFocus}
-          defaultValue="I want to create an App that helps people learn languages based on their personality."
+          defaultValue="I want to create an app that helps people learn Python"
         ></CustomTextarea>
         <CustomTextarea
-          instructions="What are the trends of your region?"
-          placeholder="What are the trends of your region? (Could be What type of people are you hoping to sell to?)"
+          instructions="What type of people are you hoping to sell to?"
+          placeholder="What type of people are you hoping to sell to?"
           infoSetter={setTrends}
           defaultValue="Where I live people have high literacy, knowledge of the internet and high earning potential."
         ></CustomTextarea>
         <CustomTextarea
-          instructions="Enter your CV"
-          placeholder="Enter your CV"
+          instructions="What are the 3 or 4 skills you want to focsu on?"
+          placeholder="What are the 3 or 4 skills you want to focsu on?"
           infoSetter={setCv}
-          defaultValue="Python, ReactJS and Video editing skills."
+          defaultValue="Python, React, Video Editing Skills and Danish language skills"
         ></CustomTextarea>
       </div>
       <div className="AppButtonDiv">
-        <Button
+        <button
+          className="solid-card-button"
           onClick={businessIdeas}
           size="xl"
-        >Generate Business Ideas</Button>
+        >Generate Business Ideas</button>
       </div>
       {
         ideaResults.length > 0 ?

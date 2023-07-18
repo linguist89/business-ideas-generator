@@ -16,19 +16,19 @@ export default function DefaultModal({ content, title }) {
             // eslint-disable-next-line
             style="underline"
           >
-            <Tabs.Item active title="Main Priority">
+            <Tabs.Item active title="Consumer Pain Point">
               <p style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Main Priority']}
+                {content && content['Consumer Pain Point']}
               </p>
             </Tabs.Item>
-            <Tabs.Item title="Pros">
+            <Tabs.Item title="Effort">
               <p style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Pros']}
+                {content && content['Effort']}
               </p>
             </Tabs.Item>
-            <Tabs.Item title="Cons">
+            <Tabs.Item title="Time">
               <p style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Cons']}
+                {content && content['Time']}
               </p>
             </Tabs.Item>
           </Tabs.Group>
