@@ -2,7 +2,7 @@ import './App.css';
 import './index.css';
 import CustomTextarea from './CustomTextarea';
 import React from 'react';
-import { getBusinessIdeas } from './HelperFunctions';
+import { getBusinessIdeas, getBusinessIdeasOpenAITest } from './HelperFunctions';
 import ResultsTable from './ResultsTable';
 import Header from './Header';
 import Spinner from './Spinner';
@@ -14,7 +14,6 @@ export const UserContext = React.createContext(null);
 
 function App() {
   const [user, setUser] = React.useState(null);
-  const [entrepreneurType, setEntrepreneurType] = React.useState();
   const [focus, setFocus] = React.useState();
   const [trends, setTrends] = React.useState();
   const [cv, setCv] = React.useState();
@@ -39,7 +38,7 @@ function App() {
         businessIdeas();
       }
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [backgroundTasks, businessIdeasTaskId]);
 
   React.useEffect(() => {
@@ -79,6 +78,30 @@ function App() {
 
   }
 
+  async function businessIdeasOpenAITest() {
+    setIdeasLoading(true);
+    const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
+    alert(JSON.stringify(results));
+    let listString = results.data.choices[0].message.content;
+    // remove the brackets and split by the tuples
+    let tempArray = listString.slice(2, -2).split('),\n(');
+
+    // create array of objects
+    let objArray = tempArray.map(item => {
+      let subArray = item.split('", "');
+      return {
+        title: subArray[0].substring(1),
+        description: subArray[1],
+        audience: subArray[2],
+        marketing: subArray[3].substring(0, subArray[3].length - 1)
+      };
+    });
+
+    console.log(objArray);
+    setIdeaResults(objArray);
+    setIdeasLoading(false);
+  }
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Header></Header>
@@ -106,8 +129,11 @@ function App() {
         <button
           className="solid-card-button"
           onClick={businessIdeas}
-          size="xl"
         >Generate Business Ideas</button>
+        <button
+          className="solid-card-button"
+          onClick={businessIdeasOpenAITest}
+        >OpenAI Test</button>
       </div>
       {
         ideaResults.length > 0 ?

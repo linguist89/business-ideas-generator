@@ -2,7 +2,7 @@ import React from 'react';
 import './ResultsTable.css';
 import { getContextInfo } from './HelperFunctions';
 import { collection, doc, onSnapshot } from "firebase/firestore";
-import ContextModal from './ContextModal';
+import ContextDialog from './ContextDialog';
 import { db } from './Firebase.js';
 
 function ResultsTable({ products }) {
@@ -59,23 +59,23 @@ function ResultsTable({ products }) {
             <th>Description</th>
             <th>Potential Clients</th>
             <th>Where to find the clients</th>
-            <th></th>
+            <th>Get more info</th>
           </tr>
         </thead>
         <tbody>
           {
             products.map((product, index) => (
               <tr key={index}>
-                <td>{product[0]}</td>
-                <td>{product[1]}</td>
-                <td>{product[2]}</td>
-                <td>{product[3]}</td>
+                <td>{product['title']}</td>
+                <td>{product['description']}</td>
+                <td>{product['audience']}</td>
+                <td>{product['marketing']}</td>
                 <td>
                   {
                     loading[index]
                       ? <span>Loading...</span>
                       : backgroundTasks[index]
-                        ? <ContextModal content={backgroundTasks[index]} title={product[0]}></ContextModal>
+                        ? <ContextDialog content={backgroundTasks[index]} title={product['title']}></ContextDialog>
                         : <button
                           onClick={async () => backgroundTasks[index] ? contextButtonShow(index) : contextButtonGet(product, index)}
                           className="solid-card-button"
