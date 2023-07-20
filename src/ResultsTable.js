@@ -35,9 +35,23 @@ function ResultsTable({ products }) {
     }
   }
 
+  async function downloadPdf(products) {
+    const response = await fetch('/.netlify/functions/create-pdf', {
+      method: 'POST',
+      body: JSON.stringify(products),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `products-document.pdf`;
+    link.click();
+  }
 
   return (
     <div className="ResultsTable">
+      <button className="solid-card-button" onClick={() => downloadPdf(products)}>Download Pdf</button>
       <table>
         <thead>
           <tr>
