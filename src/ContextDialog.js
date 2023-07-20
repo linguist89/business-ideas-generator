@@ -6,6 +6,11 @@ import './Buttons.css';
 import './ContextDialog.css';
 
 export default function ContextDialog({ content, title }) {
+  React.useEffect(() => {
+    console.log(content['Consumer Pain Point']);
+    console.log(content['Effort']);
+    console.log(content['Time']);
+  })
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -28,20 +33,27 @@ export default function ContextDialog({ content, title }) {
               </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="Consumer Pain Point">
-              <p className="Text" style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Consumer Pain Point']}
-              </p>
+              <ul>
+                {content && content['Consumer Pain Point'].map((item, index) => (
+                  <li key={index}>{item.point}</li>
+                ))}
+              </ul>
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="Effort">
-              <p className="Text" style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Effort']}
-              </p>
+              <ul>
+                {content && content['Effort'].map((item, index) => (
+                  <li key={index}>{item.point}</li>
+                ))}
+              </ul>
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="Time">
-              <p className="Text" style={{ whiteSpace: 'pre-wrap' }}>
-                {content && content['Time']}
-              </p>
+              <ul>
+                {content && content['Time'].map((item, index) => (
+                  <li key={index}>{item.point}</li>
+                ))}
+              </ul>
             </Tabs.Content>
+
           </Tabs.Root>
           <div style={{ display: 'flex', marginTop: 25, justifyContent: 'flex-end' }}>
             <Dialog.Close asChild>

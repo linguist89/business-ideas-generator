@@ -1,54 +1,40 @@
 import React from 'react';
 import './ResultsTable.css';
-import { getContextInfo } from './HelperFunctions';
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { getContextInfoOpenAITest } from './HelperFunctions';
 import ContextDialog from './ContextDialog';
-import { db } from './Firebase.js';
 
 function ResultsTable({ products }) {
-  const [backgroundTasks, setBackgroundTasks] = React.useState({});
-  const [productsTaskId, setProductsTaskId] = React.useState([]);
+  const [ideaContexts, setIdeaContexts] = React.useState([]);
   const [loading, setLoading] = React.useState({});
 
-  React.useEffect(() => {
-    let unsubscribe;
-    console.log(loading);
-    if (productsTaskId && productsTaskId.length > 0) {
-      let currentTask = productsTaskId[0];
-      unsubscribe = onSnapshot(doc(collection(db, 'context'), currentTask['taskId']),
-        (doc) => {
-          if (doc.exists()) {
-            alert(JSON.stringify(doc.data()));
-            console.log(doc.data());
-            setBackgroundTasks(prevTasks => ({
-              ...prevTasks,
-              [currentTask['index']]: doc.data()['content']
-            }));
-            setLoading(prevLoading => ({ ...prevLoading, [currentTask['index']]: false }));
-
-            // Remove current task from productsTaskId after fetching the data
-            setProductsTaskId(prevTasks => prevTasks.filter(task => task['taskId'] !== currentTask['taskId']));
-          }
-        }, err => {
-          console.log(err);
+  async function handleButtonClick(product, index) {
+    if (ideaContexts[index]) {
+      alert(JSON.stringify(ideaContexts[index]));
+    } else {
+      setLoading(prevLoading => ({ ...prevLoading, [index]: true }));
+      try {
+        const results = await getContextInfoOpenAITest(product);
+        console.log("Results");
+        console.log(results);
+        // Parsing the JSON string results into JavaScript objects
+        const parsedResults = {
+          "Consumer Pain Point": JSON.parse(results["Consumer Pain Point"]),
+          "Effort": JSON.parse(results["Effort"]),
+          "Time": JSON.parse(results["Time"])
+        };
+        setIdeaContexts(prevTasks => {
+          const newTasks = [...prevTasks];
+          newTasks[index] = parsedResults;
+          return newTasks;
         });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(prevLoading => ({ ...prevLoading, [index]: false }));
+      }
     }
-
-    return () => unsubscribe && unsubscribe();
-    // eslint-disable-next-line
-  }, [productsTaskId]);
-
-
-  function contextButtonShow(index) {
-    alert(JSON.stringify(backgroundTasks[index]));
   }
 
-  async function contextButtonGet(product, index) {
-    setLoading(prevLoading => ({ ...prevLoading, [index]: true }));
-    let taskId = await getContextInfo(product);
-    // Add the new task to productsTaskId
-    setProductsTaskId(prevTasks => [...prevTasks, { taskId: taskId['content'][0], index: index }]);
-  }
 
   return (
     <div className="ResultsTable">
@@ -66,21 +52,20 @@ function ResultsTable({ products }) {
           {
             products.map((product, index) => (
               <tr key={index}>
-                <td>{product['title']}</td>
+                <td>{product['product']}</td>
                 <td>{product['description']}</td>
-                <td>{product['audience']}</td>
-                <td>{product['marketing']}</td>
+                <td>{product['potentialClients']}</td>
+                <td>{product['whereToFindClients']}</td>
                 <td>
                   {
                     loading[index]
                       ? <span>Loading...</span>
-                      : backgroundTasks[index]
-                        ? <ContextDialog content={backgroundTasks[index]} title={product['title']}></ContextDialog>
+                      : ideaContexts[index]
+                        ? <ContextDialog content={ideaContexts[index]} title={product['product']}></ContextDialog>
                         : <button
-                          onClick={async () => backgroundTasks[index] ? contextButtonShow(index) : contextButtonGet(product, index)}
+                          onClick={() => handleButtonClick(product, index)}
                           className="solid-card-button"
                         >Get</button>
-
                   }
                 </td>
               </tr>

@@ -1,147 +1,21 @@
 import './App.css';
-import './index.css';
-import CustomTextarea from './CustomTextarea';
-import React from 'react';
-import { getBusinessIdeas, getBusinessIdeasOpenAITest } from './HelperFunctions';
-import ResultsTable from './ResultsTable';
 import Header from './Header';
-import Spinner from './Spinner';
-import { db } from './Firebase.js';
-import { collection, doc, onSnapshot } from 'firebase/firestore';
-import './Buttons.css';
+import BodyComponent from './BodyComponent';
+import React from 'react';
 
 export const UserContext = React.createContext(null);
 
 function App() {
-  const [user, setUser] = React.useState(null);
-  const [focus, setFocus] = React.useState();
-  const [trends, setTrends] = React.useState();
-  const [cv, setCv] = React.useState();
-  const [businessIdeasTaskId, setBusinessIdeasTaskId] = React.useState();
-  const [backgroundTasks, setBackgroundTasks] = React.useState({});
-  const [ideaResults, setIdeaResults] = React.useState([]);
-  const [ideasLoading, setIdeasLoading] = React.useState(false);
+    const [user, setUser] = React.useState(null);
 
-  React.useEffect(() => {
-    if (backgroundTasks[businessIdeasTaskId]) {
-      console.log(`backgroundTasks Status: ${backgroundTasks[businessIdeasTaskId]['status']}`);
-      try {
-        let resultsString = backgroundTasks[businessIdeasTaskId]['content'];
-        console.log(`resultsString type: ${typeof resultsString}`);
-        console.log(`resultsString: ${resultsString}`);
-        resultsString = resultsString.replace(/\(/g, "[").replace(/\)/g, "]").replace(/'/g, "\"");
-        let results = JSON.parse(resultsString);
-        setIdeaResults(results);
-        setIdeasLoading(false);
-      } catch (error) {
-        console.error('Error parsing the resultsString: ', error);
-        businessIdeas();
-      }
-    }
-    // eslint-disable-next-line
-  }, [backgroundTasks, businessIdeasTaskId]);
-
-  React.useEffect(() => {
-    let unsubscribe;
-    if (businessIdeasTaskId && typeof businessIdeasTaskId === 'string') {
-      const documentRef = doc(collection(db, 'tasks'), businessIdeasTaskId);
-
-      unsubscribe = onSnapshot(documentRef, (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          setBackgroundTasks(prevTasks => ({
-            ...prevTasks,
-            [businessIdeasTaskId]: docSnapshot.data()
-          }));
-        }
-      }, err => {
-        console.log(err);
-      });
-    }
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [businessIdeasTaskId]);
-
-  async function businessIdeas() {
-    setIdeasLoading(true);
-    setIdeaResults([]);
-    const string_output = `${focus} SPLIT${trends} SPLIT${cv}`
-    const task = await getBusinessIdeas(string_output);
-    if (task['status'] === "OK") {
-      setBusinessIdeasTaskId(task['content'][0]);
-    } else {
-      alert("There has been an error");
-    }
-
-  }
-
-  async function businessIdeasOpenAITest() {
-    setIdeasLoading(true);
-    const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
-    alert(JSON.stringify(results));
-    let listString = results.data.choices[0].message.content;
-    // remove the brackets and split by the tuples
-    let tempArray = listString.slice(2, -2).split('),\n(');
-
-    // create array of objects
-    let objArray = tempArray.map(item => {
-      let subArray = item.split('", "');
-      return {
-        title: subArray[0].substring(1),
-        description: subArray[1],
-        audience: subArray[2],
-        marketing: subArray[3].substring(0, subArray[3].length - 1)
-      };
-    });
-
-    console.log(objArray);
-    setIdeaResults(objArray);
-    setIdeasLoading(false);
-  }
-
-  return (
-    <UserContext.Provider value={{ user, setUser }}>
-      <Header></Header>
-      <div className="App">
-        <CustomTextarea
-          instructions="What is your idea?"
-          placeholder="What is your idea?"
-          infoSetter={setFocus}
-          defaultValue="I want to create an app that helps people learn Python"
-        ></CustomTextarea>
-        <CustomTextarea
-          instructions="What type of people are you hoping to sell to?"
-          placeholder="What type of people are you hoping to sell to?"
-          infoSetter={setTrends}
-          defaultValue="Where I live people have high literacy, knowledge of the internet and high earning potential."
-        ></CustomTextarea>
-        <CustomTextarea
-          instructions="What are the 3 or 4 skills you want to focsu on?"
-          placeholder="What are the 3 or 4 skills you want to focsu on?"
-          infoSetter={setCv}
-          defaultValue="Python, React, Video Editing Skills and Danish language skills"
-        ></CustomTextarea>
-      </div>
-      <div className="AppButtonDiv">
-        <button
-          className="solid-card-button"
-          onClick={businessIdeas}
-        >Generate Business Ideas</button>
-        <button
-          className="solid-card-button"
-          onClick={businessIdeasOpenAITest}
-        >OpenAI Test</button>
-      </div>
-      {
-        ideaResults.length > 0 ?
-          <ResultsTable products={ideaResults}></ResultsTable> :
-          ideasLoading && <Spinner></Spinner>
-      }
-    </UserContext.Provider>
-  );
+    return (
+        <UserContext.Provider value={{ user, setUser }}>
+            <div className="App">
+                <Header></Header>
+                <BodyComponent></BodyComponent>
+            </div>
+        </UserContext.Provider>
+    );
 }
 
 export default App;

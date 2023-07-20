@@ -18,13 +18,13 @@ function GoogleAuthentication() {
         console.log(error.message);
       }
     }
-    
+
     fetchRedirectResult();
-  }, [setUser]); 
+  }, [setUser]);
 
   return (
     <div>
-      { !user &&
+      {!user &&
         <button className="transparent-purple-button google-button" onClick={() => signInWithPopup(auth, googleProvider)}>
           <img src={GoogleLogo} alt="Google Logo" className="google-logo" />
           Sign in with Google

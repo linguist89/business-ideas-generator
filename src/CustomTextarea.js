@@ -1,29 +1,27 @@
-import { Label, Textarea } from 'flowbite-react';
 import React from 'react';
+import './CustomTextarea.css';
 
-function CustomTextarea({ instructions, placeholder, infoSetter, defaultValue  }) {
+function CustomTextarea({ instructions, placeholder, infoSetter, defaultValue }) {
 
-    React.useEffect(() => {
-      infoSetter(defaultValue);
-      // eslint-disable-next-line
-    }, []);
+  React.useEffect(() => {
+    infoSetter(defaultValue);
+    // eslint-disable-next-line
+  }, []);
 
   return (
-    <div
-      id="textarea"
-    >
-      <div className="mb-2 block">
-        <Label
-          htmlFor={instructions}
-          value={instructions}
-        />
+    <div id="textarea">
+      <div>
+        <label htmlFor={instructions} className="custom-label">
+          {instructions}
+        </label>
       </div>
-      <Textarea
+      <textarea
         id={instructions}
         placeholder={defaultValue}
         defaultValue={defaultValue}
         required
         rows={4}
+        className="custom-textarea"
         onChange={(event) => {
           infoSetter(event.target.value);
         }}
