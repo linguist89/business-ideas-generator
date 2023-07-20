@@ -33,23 +33,27 @@ export default function ContextDialog({ content, title }) {
               </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="Consumer Pain Point">
+              <h1 className="ContextTitle">Consumer pain point describes where the consumer could find issues with the idea -
+                this gives ideas to where solutions can be found</h1>
               <ul>
                 {content && content['Consumer Pain Point'].map((item, index) => (
-                  <li key={index}>{item.point}</li>
+                  <li className="ListItem" key={index}>{item.point}</li>
                 ))}
               </ul>
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="Effort">
+              <h1 className="ContextTitle">Effort describes what you should do to minimize the effort of your customers to use the platform</h1>
               <ul>
                 {content && content['Effort'].map((item, index) => (
-                  <li key={index}>{item.point}</li>
+                  <li className="ListItem" key={index}>{item.point}</li>
                 ))}
               </ul>
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="Time">
+              <h1 className="ContextTitle">Ways in which you can minimize the time delay of the consumer getting on board</h1>
               <ul>
                 {content && content['Time'].map((item, index) => (
-                  <li key={index}>{item.point}</li>
+                  <li className="ListItem" key={index}>{item.point}</li>
                 ))}
               </ul>
             </Tabs.Content>

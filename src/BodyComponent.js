@@ -7,9 +7,12 @@ import LandingImage from './static/images/lighbulb_shadow.png';
 import ResultsTable from './ResultsTable';
 import Spinner from './Spinner';
 import './Buttons.css';
-
+import { UserContext } from './App';
+import LoginDialog from './LoginDialog';
 
 function BodyComponent() {
+  const { user } = React.useContext(UserContext);
+  const [showLoginDialog, setShowLoginDialog] = React.useState(false);
   const [focus, setFocus] = React.useState();
   const [trends, setTrends] = React.useState();
   const [cv, setCv] = React.useState();
@@ -26,24 +29,26 @@ function BodyComponent() {
   };
 
   async function businessIdeasOpenAITest() {
-    setIdeasLoading(true);
-    setIdeaResults([]);
-    const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
-    console.log("Results");
-    console.log(results);
-    let response = results.data.choices[0].message.content;
-    let parsedResponse = JSON.parse(response);
-    console.log(parsedResponse);
-    setIdeaResults(parsedResponse);
-    setIdeasLoading(false);
+    if (!user) {
+      setShowLoginDialog(true);
+    } else {
+      setIdeasLoading(true);
+      setIdeaResults([]);
+      const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
+      let response = results.data.choices[0].message.content;
+      let parsedResponse = JSON.parse(response);
+      setIdeaResults(parsedResponse);
+      setIdeasLoading(false);
+    }
   }
-
 
   return (
     <>
+      <LoginDialog open={showLoginDialog} onClose={() => setShowLoginDialog(false)} />
       <div className="body-component">
         <div className="left-section">
-          <h1 className="title">Generating the ideas, so you can build them without wasting time</h1>
+          <h1 className="title">Business Ideas</h1>
+          <h2 className="subtitle">Generating the ideas, so you can build them without wasting time</h2>
           <div className="button-group">
             <button className="solid-button" onClick={scrollToIdeasGenerator}>Let's get ideas</button>
           </div>

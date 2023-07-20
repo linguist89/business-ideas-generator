@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Header.css';
 import { UserContext } from './App';
 import { auth } from './Firebase.js';
@@ -8,6 +8,7 @@ import LoginDialog from './LoginDialog.js';
 
 function Header() {
   const { user, setUser } = React.useContext(UserContext);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -28,8 +29,9 @@ function Header() {
             <div className="welcome-div">Welcome, {user.displayName ? user.displayName : user.email}</div>
             <button className="transparent-button" onClick={() => signOut(auth)}>Logout</button>
           </> :
-          <LoginDialog />
+          <button className="transparent-button" onClick={() => setShowLoginDialog(true)}>Login</button>
       }
+      <LoginDialog open={showLoginDialog} onClose={() => setShowLoginDialog(false)} />
     </header>
   );
 };

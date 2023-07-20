@@ -19,10 +19,6 @@
     border: 1px solid #ddd;
 }
 
-.responsiveTable tbody tr {
-    border: none;
-}
-
 .ResultsTable th {
     font-weight: bold;
     background-color: #1F5668; 
@@ -52,4 +48,42 @@
 
 .ResultsTable td:first-child, .ResultsTable th:first-child {
     font-weight: bold;
+}
+
+/* Responsive layout for small screens */
+@media only screen and (max-width: 768px) {
+    .ResultsTable table, .ResultsTable thead, .ResultsTable tbody, .ResultsTable th, .ResultsTable td, .ResultsTable tr { 
+        display: block; 
+    }
+
+    .ResultsTable thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .ResultsTable td { 
+        border: none;
+        position: relative;
+        padding-left: 0%; 
+        text-align: left;
+    }
+
+    .ResultsTable td:before { 
+        position: relative;
+        left: 0;
+        display: block;
+        width: 100%; 
+        padding: 0;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        padding-bottom: 5px;
+    }
+
+    .ResultsTable td:nth-of-type(1):before { content: "Product"; }
+    .ResultsTable td:nth-of-type(2):before { content: "Description"; }
+    .ResultsTable td:nth-of-type(3):before { content: "Potential Clients"; }
+    .ResultsTable td:nth-of-type(4):before { content: "Where to Find Clients"; }
+    .ResultsTable td:nth-of-type(5):before { content: "Get more info"; }
 }

@@ -170,6 +170,21 @@ input {
   box-shadow: 0 0 0 2px #4FBE92;
 }
 
+.ListItem {
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.ContextTitle{
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-bottom: 2rem;
+}
+
 @keyframes overlayShow {
   from {
     opacity: 0;
