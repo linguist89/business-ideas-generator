@@ -25,6 +25,9 @@
 }
 
 @media (max-width: 768px) {
+  #ideas-generator{
+    padding: 0rem 1rem 5rem 1rem;
+  }
   .title {
     font-size: 2.5rem;
   }

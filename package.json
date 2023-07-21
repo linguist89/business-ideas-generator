@@ -15,6 +15,7 @@
     "flowbite": "^1.6.6",
     "flowbite-react": "^0.4.9",
     "openai": "^3.3.0",
+    "pdf-lib": "^1.17.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

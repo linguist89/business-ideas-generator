@@ -35,19 +35,23 @@ function ResultsTable({ products }) {
     }
   }
 
-  async function downloadPdf(products) {
-    const response = await fetch('/.netlify/functions/create-pdf', {
-      method: 'POST',
-      body: JSON.stringify(products),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `products-document.pdf`;
-    link.click();
+  async function downloadPdf() {
+    try {
+      const response = await fetch('/netlify/functions/create-pdf/create-pdf.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `hello-world.pdf`;
+      link.click();
+    } catch (error) {
+      console.log('Fetch API error', error);
+    }
   }
+
 
   return (
     <div className="ResultsTable">
