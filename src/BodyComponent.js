@@ -88,7 +88,7 @@ function BodyComponent() {
           </div>
           {
             ideaResults.length > 0 ?
-              <ResultsTable products={ideaResults}></ResultsTable> :
+              <ResultsTable products={ideaResults} title={focus}></ResultsTable> :
               ideasLoading && <Spinner></Spinner>
           }
         </div>
