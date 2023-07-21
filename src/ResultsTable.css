@@ -52,6 +52,7 @@
 
 /* Responsive layout for small screens */
 @media only screen and (max-width: 768px) {
+    
     .ResultsTable table, .ResultsTable thead, .ResultsTable tbody, .ResultsTable th, .ResultsTable td, .ResultsTable tr { 
         display: block; 
     }
@@ -63,7 +64,11 @@
     }
 
     .ResultsTable td { 
-        border: none;
+        /* Keep the border, but remove the left and right ones */
+        border-top: 1px solid #ddd; 
+        border-bottom: 1px solid #ddd; 
+        border-left: none;
+        border-right: none;
         position: relative;
         padding-left: 0%; 
         text-align: left;
@@ -86,4 +91,9 @@
     .ResultsTable td:nth-of-type(3):before { content: "Potential Clients"; }
     .ResultsTable td:nth-of-type(4):before { content: "Where to Find Clients"; }
     .ResultsTable td:nth-of-type(5):before { content: "Get more info"; }
+
+    /* No border for the first 'td' in the responsive view to avoid double border at the top */
+    .ResultsTable tr:first-child td {
+        border-top: none;
+    }
 }

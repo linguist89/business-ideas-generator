@@ -125,7 +125,7 @@ function ResultsTable({ products, title }) {
       <button className="solid-card-button" onClick={() => createAndDownloadPdf(title)}>
         {creatingPdf ? 'Creating PDF...' : 'Download PDF'}
       </button>
-      <table>
+      <table id="table-section">
         <thead>
           <tr>
             <th>Product</th>
