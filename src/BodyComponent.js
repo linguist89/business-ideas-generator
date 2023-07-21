@@ -10,7 +10,7 @@ import './Buttons.css';
 import { UserContext } from './App';
 import LoginDialog from './LoginDialog';
 import { db } from './Firebase.js';
-import { doc, setDoc, arrayUnion, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, collection, query, getDocs } from 'firebase/firestore';
 
 function BodyComponent() {
   const { user } = React.useContext(UserContext);
