@@ -5,6 +5,10 @@ import ContextDialog from './ContextDialog';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import logo from './static/images/site_logo.png';  // adjust this import path as needed
+import { SelectedIdeaContext } from './BodyComponent';
+import { UserContext } from './App';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from './Firebase.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function sanitizeTitle(title) {
@@ -13,10 +17,12 @@ function sanitizeTitle(title) {
 }
 
 function ResultsTable({ products, title }) {
+  const { user } = React.useContext(UserContext);
   const [ideaContexts, setIdeaContexts] = React.useState([]);
   const [loading, setLoading] = React.useState({});
   const [creatingPdf, setCreatingPdf] = React.useState(false);
   const [logoBase64, setLogoBase64] = useState('');
+  const { selectedIdea, setSelectedIdea } = React.useContext(SelectedIdeaContext);
 
   useEffect(() => {
     fetch(logo)
@@ -30,7 +36,7 @@ function ResultsTable({ products, title }) {
       });
   }, []);
 
-  async function handleButtonClick(product, index) {
+  async function handleButtonClick(product, index, retryCount = 0) {
     if (ideaContexts[index]) {
       alert(JSON.stringify(ideaContexts[index]));
     } else {
@@ -39,7 +45,6 @@ function ResultsTable({ products, title }) {
         const results = await getContextInfoOpenAITest(product);
         console.log("Results");
         console.log(results);
-        // Parsing the JSON string results into JavaScript objects
         const parsedResults = {
           "Consumer Pain Point": JSON.parse(results["Consumer Pain Point"]),
           "Effort": JSON.parse(results["Effort"]),
@@ -50,13 +55,24 @@ function ResultsTable({ products, title }) {
           newTasks[index] = parsedResults;
           return newTasks;
         });
+
+        const ideaDoc = doc(db, 'users', user.uid, 'ideas', selectedIdea);
+        await updateDoc(ideaDoc, {
+          ideas: products.map((p, i) => i === index ? { ...p, ...parsedResults } : p)
+        });
       } catch (error) {
         console.error(error);
+        if (retryCount < 5) {
+          console.log(`Retrying... (${retryCount + 1})`);
+          handleButtonClick(product, index, retryCount + 1);
+        }
       } finally {
         setLoading(prevLoading => ({ ...prevLoading, [index]: false }));
       }
     }
   }
+
+
 
   async function createAndDownloadPdf(title) {
     setCreatingPdf(true);
@@ -79,10 +95,13 @@ function ResultsTable({ products, title }) {
         // Products
         ...products.map((product, index) => ({
           stack: [
-            { text: `Product: ${product.product}`, style: 'subheader' },
-            { text: `Description: ${product.description}` },
-            { text: `Potential Clients: ${product.potentialClients}` },
-            { text: `Where to find the clients: ${product.whereToFindClients}` },
+            { text: `Product:\n ${product.product}`, style: 'subheader' },
+            { text: `Description:\n ${product.description}\n\n` },
+            { text: `Potential Clients:\n ${product.potentialClients}\n\n` },
+            { text: `Where to find the clients:\n ${product.whereToFindClients}\n\n` },
+            { text: `Consumer Pain Point:\n ${product['Consumer Pain Point'].map(obj => obj.point).join('\n')}\n\n` },
+            { text: `Effort:\n ${product['Effort'].map(obj => obj.point).join('\n')}\n\n` },
+            { text: `Time:\n ${product['Time'].map(obj => Object.values(obj)[0]).join('\n')}\n\n` },
           ],
           margin: [20, 20, 20, 20]  // [left, top, right, bottom]
         })),
@@ -145,14 +164,16 @@ function ResultsTable({ products, title }) {
                 <td>{product['whereToFindClients']}</td>
                 <td>
                   {
-                    loading[index]
-                      ? <span>Loading...</span>
-                      : ideaContexts[index]
-                        ? <ContextDialog content={ideaContexts[index]} title={product['product']}></ContextDialog>
-                        : <button
-                          onClick={() => handleButtonClick(product, index)}
-                          className="solid-card-button"
-                        >Get</button>
+                    product['Consumer Pain Point'].length > 0 && product['Effort'].length > 0 && product['Time'].length > 0
+                      ? <ContextDialog content={product} title={product['product']}></ContextDialog>
+                      : loading[index]
+                        ? <span>Loading...</span>
+                        : ideaContexts[index]
+                          ? <ContextDialog content={ideaContexts[index]} title={product['product']}></ContextDialog>
+                          : <button
+                            onClick={() => handleButtonClick(product, index)}
+                            className="solid-card-button"
+                          >Get</button>
                   }
                 </td>
               </tr>
@@ -160,7 +181,8 @@ function ResultsTable({ products, title }) {
           }
         </tbody>
       </table>
-    </div>
+
+    </div >
   );
 }
 

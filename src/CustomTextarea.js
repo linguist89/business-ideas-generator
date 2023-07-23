@@ -1,10 +1,10 @@
 import React from 'react';
 import './CustomTextarea.css';
 
-function CustomTextarea({ instructions, placeholder, infoSetter, defaultValue }) {
+function CustomTextarea({ instructions, placeholder, infoSetter, value }) {
 
   React.useEffect(() => {
-    infoSetter(defaultValue);
+    infoSetter(value);
     // eslint-disable-next-line
   }, []);
 
@@ -17,8 +17,8 @@ function CustomTextarea({ instructions, placeholder, infoSetter, defaultValue })
       </div>
       <textarea
         id={instructions}
-        placeholder={defaultValue}
-        defaultValue={defaultValue}
+        placeholder={placeholder}
+        value={value}
         required
         rows={4}
         className="custom-textarea"

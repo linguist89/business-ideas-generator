@@ -56,7 +56,7 @@ export default function ContextDialog({ content, title }) {
           </Tabs.Root>
           <div style={{ display: 'flex', marginTop: 25, justifyContent: 'flex-end' }}>
             <Dialog.Close asChild>
-              <button className="solid-card-button">Save</button>
+              <button className="solid-card-button">Close</button>
             </Dialog.Close>
           </div>
           <Dialog.Close asChild>

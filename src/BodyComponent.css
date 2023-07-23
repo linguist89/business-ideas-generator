@@ -5,6 +5,8 @@
   min-height: 50vh;
   padding: 2rem 5rem 1rem 5rem;
   margin-bottom: 2rem;
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
 #ideas-generator button {
@@ -34,6 +36,9 @@
 
 .previous-items-title{
   padding-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 .title {
@@ -78,16 +83,15 @@
   max-width: 30vw;
 }
 
-.previous-items-section h1{
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
 @media (max-width: 768px) {
   .body-component {
-    flex-direction: column-reverse;
+    flex-direction: column;
     padding-top: 50px;
     padding-left: 0;
+  }
+  .generate-section, .previous-items-section{
+    max-width: 95vw;
+    padding-bottom: 3rem;
   }
 }
 
