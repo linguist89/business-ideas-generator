@@ -114,15 +114,6 @@ function BodyComponent() {
     });
   };
 
-  const scrollToTableSection = () => {
-    const element = document.getElementById('table-section');
-    const rect = element.getBoundingClientRect();
-    window.scrollTo({
-      top: rect.top - 70,
-      behavior: 'smooth'
-    });
-  };
-
   async function saveIdeasToFirebase(searchData) {
     try {
       const userIdeasRef = collection(db, 'users', user.uid, 'ideas');
@@ -143,19 +134,21 @@ function BodyComponent() {
       setIdeasLoading(true);
       setIdeaResults([]);
       const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
-
       // Save tokens to Firebase
       updateFirebaseWithTokens(results);
 
       let response = results.data.choices[0].message.content;
       let parsedResponse = JSON.parse(response);
-
+      console.log(parsedResponse);
       // Adding the new fields to each object in the parsedResponse array
       parsedResponse = parsedResponse.map(item => ({
         ...item,
         'Consumer Pain Point': [],
         'Effort': [],
-        'Time': []
+        'Time': [],
+        'Creating the product': [],
+        'Finding customers': [],
+        'Selling product': []
       }));
 
       setIdeaResults(parsedResponse);
@@ -214,8 +207,8 @@ function BodyComponent() {
           <div className="generate-section">
             <h1 className="previous-items-title">Generate new ideas</h1>
             <CustomTextarea
-              instructions="What is your idea?"
-              placeholder="What is your idea?"
+              instructions="What do you want to do?"
+              placeholder="What do you want to do?"
               infoSetter={setFocus}
               value={focus || "I want to make and sell eco-friendly candles"}
             ></CustomTextarea>

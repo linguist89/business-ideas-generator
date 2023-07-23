@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './ResultsTable.css';
-import { getContextInfoOpenAITest } from './HelperFunctions';
+import { getContextInfoOpenAITest, getStartingInfoOpenAITest } from './HelperFunctions';
 import ContextDialog from './ContextDialog';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import logo from './static/images/site_logo.png';  // adjust this import path as needed
+import logo from './static/images/site_logo.png';
 import { SelectedIdeaContext } from './BodyComponent';
 import { UserContext } from './App';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -20,9 +20,11 @@ function ResultsTable({ products, title }) {
   const { user } = React.useContext(UserContext);
   const [ideaContexts, setIdeaContexts] = React.useState([]);
   const [loading, setLoading] = React.useState({});
+  const [startLoading, setStartLoading] = React.useState({});
   const [creatingPdf, setCreatingPdf] = React.useState(false);
   const [logoBase64, setLogoBase64] = useState('');
-  const { selectedIdea, setSelectedIdea } = React.useContext(SelectedIdeaContext);
+  const { selectedIdea } = React.useContext(SelectedIdeaContext);
+  const [selectedAccordionIndex, setSelectedAccordionIndex] = useState(null);
 
   useEffect(() => {
     fetch(logo)
@@ -35,6 +37,38 @@ function ResultsTable({ products, title }) {
         reader.readAsDataURL(blob);
       });
   }, []);
+
+  async function handleStartButtonClick(product, index, retryCount = 0) {
+    if (ideaContexts[index] && ideaContexts[index]['Creating the product']) {
+      alert(JSON.stringify(ideaContexts[index]));
+    } else {
+      setStartLoading(prevStartLoading => ({ ...prevStartLoading, [index]: true }));
+      try {
+        const results = await getStartingInfoOpenAITest(product);
+        console.log("Results");
+        console.log(results);
+
+        setIdeaContexts(prevTasks => {
+          const newTasks = [...prevTasks];
+          newTasks[index] = { ...newTasks[index], ...results };
+          return newTasks;
+        });
+
+        const ideaDoc = doc(db, 'users', user.uid, 'ideas', selectedIdea);
+        await updateDoc(ideaDoc, {
+          ideas: products.map((p, i) => i === index ? { ...p, ...results } : p)
+        });
+      } catch (error) {
+        console.error(error);
+        if (retryCount < 5) {
+          console.log(`Retrying... (${retryCount + 1})`);
+          handleStartButtonClick(product, index, retryCount + 1);
+        }
+      } finally {
+        setStartLoading(prevStartLoading => ({ ...prevStartLoading, [index]: false }));
+      }
+    }
+  }
 
   async function handleButtonClick(product, index, retryCount = 0) {
     if (ideaContexts[index]) {
@@ -72,27 +106,21 @@ function ResultsTable({ products, title }) {
     }
   }
 
-
-
   async function createAndDownloadPdf(title) {
     setCreatingPdf(true);
 
-    // Sanitize the title and create the filename for the PDF
     const sanitizedTitle = sanitizeTitle(title);
     const filename = `${sanitizedTitle}.pdf`;
 
     const docDefinition = {
       pageSize: 'A4',
       content: [
-        // Title Page
         {
           text: title,
           style: 'header',
           alignment: 'center'
         },
-        // Line break
         '\n',
-        // Products
         ...products.map((product, index) => ({
           stack: [
             { text: `Product:\n ${product.product}`, style: 'subheader' },
@@ -103,26 +131,26 @@ function ResultsTable({ products, title }) {
             { text: `Effort:\n ${product['Effort'].map(obj => obj.point).join('\n')}\n\n` },
             { text: `Time:\n ${product['Time'].map(obj => Object.values(obj)[0]).join('\n')}\n\n` },
           ],
-          margin: [20, 20, 20, 20]  // [left, top, right, bottom]
+          margin: [20, 20, 20, 20]
         })),
       ],
       styles: {
         header: {
           fontSize: 18,
           bold: true,
-          margin: [0, 0, 0, 10],  // [left, top, right, bottom]
+          margin: [0, 0, 0, 10],
         },
         subheader: {
           fontSize: 16,
           bold: true,
-          margin: [0, 10, 0, 5]  // [left, top, right, bottom]
+          margin: [0, 10, 0, 5]
         }
       },
       header: function (currentPage, pageCount) {
         return [
           {
             image: logoBase64,
-            width: 50, // Adjust as necessary
+            width: 50,
             alignment: 'left',
             margin: [10, 10, 0, 0]
           },
@@ -151,38 +179,67 @@ function ResultsTable({ products, title }) {
             <th>Description</th>
             <th>Potential Clients</th>
             <th>Where to find the clients</th>
-            <th>Get more info</th>
+            <th>More Info</th>
           </tr>
         </thead>
         <tbody>
           {
             products.map((product, index) => (
-              <tr key={index}>
-                <td>{product['product']}</td>
-                <td>{product['description']}</td>
-                <td>{product['potentialClients']}</td>
-                <td>{product['whereToFindClients']}</td>
-                <td>
-                  {
-                    product['Consumer Pain Point'].length > 0 && product['Effort'].length > 0 && product['Time'].length > 0
-                      ? <ContextDialog content={product} title={product['product']}></ContextDialog>
-                      : loading[index]
-                        ? <span>Loading...</span>
-                        : ideaContexts[index]
-                          ? <ContextDialog content={ideaContexts[index]} title={product['product']}></ContextDialog>
-                          : <button
-                            onClick={() => handleButtonClick(product, index)}
-                            className="solid-card-button"
-                          >Get</button>
-                  }
-                </td>
-              </tr>
+              <>
+                <tr key={index}>
+                  <td>{product['product']}</td>
+                  <td>{product['description']}</td>
+                  <td>{product['potentialClients']}</td>
+                  <td>{product['whereToFindClients']}</td>
+                  <td>
+                    <button onClick={() => setSelectedAccordionIndex(selectedAccordionIndex === index ? null : index)} className="solid-card-button">
+                      {selectedAccordionIndex === index ? "Less info" : "More info"}
+                    </button>
+                  </td>
+                </tr>
+                {selectedAccordionIndex === index && (
+                  <tr>
+                    <td colSpan="5">
+                      <div className="MoreInfoWrapper">
+                        <div>
+                          {
+                            product['Creating the product'].length > 0 && product['Finding customers'].length > 0 && product['Selling product'].length > 0
+                              ? <button className="solid-card-button" onClick={() => {
+                                alert(`${product['Creating the product']}\n\n${product['Finding customers']}\n\n${product['Selling product']}`)
+                              }}>How to start</button>
+                              : startLoading[index]
+                                ? <span>Loading...</span>
+                                : <button
+                                  onClick={() => handleStartButtonClick(product, index)}
+                                  className="solid-card-button"
+                                >Find out how to start</button>
+                          }
+
+                        </div>
+                        <div>
+                          {
+                            product['Consumer Pain Point'].length > 0 && product['Effort'].length > 0 && product['Time'].length > 0
+                              ? <ContextDialog content={product} title={product['product']}></ContextDialog>
+                              : loading[index]
+                                ? <span>Loading...</span>
+                                : ideaContexts[index]
+                                  ? <ContextDialog content={ideaContexts[index]} title={product['product']}></ContextDialog>
+                                  : <button
+                                    onClick={() => handleButtonClick(product, index)}
+                                    className="solid-card-button"
+                                  >Get Offering Optimization</button>
+                          }
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </>
             ))
           }
         </tbody>
       </table>
-
-    </div >
+    </div>
   );
 }
 

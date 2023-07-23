@@ -9,7 +9,7 @@ export default function ContextDialog({ content, title }) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <button className="solid-card-button">Show</button>
+        <button className="solid-card-button">Show Offering Optimization</button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="ContextDialogOverlay" />

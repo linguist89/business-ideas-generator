@@ -26,7 +26,7 @@ export async function getContextInfo(product) {
 
 export async function getBusinessIdeasOpenAITest(focus, trends, cv) {
     let question = "I'm looking to start a business and I need product or service ideas based on my cover letter. I have provided a focus (that which I want as my main purpose in the business), trends (the current business landscape where I live) and cover letter (the skills and competencies that I bring to the table). Give me product ideas, potential clients and where to find these clients based on these factors."
-    let output_instructions = 'Give me 10 items and the output should be in the following JSON format: [{"product": "product name", "description": "product description", "potentialClients": "potential clients", "whereToFindClients": "where to find clients"}, ...]. Do not number the items. NOTHING ELSE'
+    let output_instructions = 'Give me 10 items and the output should be in the following JSON format: [{"product": "product name", "description": "product description", "potentialClients": " at least 5 potential clients", "whereToFindClients": " 5 places where to find clients"}, ...]. Do not number the items. NOTHING ELSE'
     let full_prompt = `${question}\nFocus: ${focus}\nType: ${trends}\nCover Letter: ${cv}\n${output_instructions}`
 
     const completion = await openai.createChatCompletion({
@@ -74,4 +74,23 @@ export async function getContextInfoOpenAITest(businessIdea) {
 }
 
 
+export async function getStartingInfoOpenAITest(product) {
+    let productString = Object.entries(product).map(([key, value]) => `${key}: ${value}`).join('\n');
+    let question = "From the idea above, give the outline in the following structure. The output should be a dictionary as is described below:\n{\n\"Creating the product\": \"Quickest way to create it in 3 sentences\",\n\"Finding customers\": \"Quickest way to validate the market in 3 sentences\",\n\"Selling product\": \"Easiest way to sell the product to those customers in 3 sentences\"\n}"
+    let content = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+            { "role": "system", "content": "You are a knowledgeable assistant." },
+            { "role": "user", "content": `${question}\n${productString}` }
+        ],
+        temperature: 1
+    });
+
+    // Check if 'content' and 'content.choices' exist and it's not empty, then only access the 'message.content'.
+    if (content) {
+        return JSON.parse(content.data.choices[0].message.content);
+    } else {
+        console.log('Error: No content or choices available.');
+    }
+}
 
