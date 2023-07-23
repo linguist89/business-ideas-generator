@@ -239,7 +239,7 @@ function BodyComponent() {
           {
             ideaResults.length > 0 ?
               <SelectedIdeaContext.Provider value={{ selectedIdea, setSelectedIdea }}>
-                <ResultsTable products={ideaResults} title={focus} />
+                <ResultsTable key="ResultsTable" products={ideaResults} title={focus} />
               </SelectedIdeaContext.Provider> :
               ideasLoading && <Spinner></Spinner>
           }

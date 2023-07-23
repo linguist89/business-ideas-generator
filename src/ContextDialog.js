@@ -15,19 +15,19 @@ export default function ContextDialog({ content, title }) {
         <Dialog.Overlay className="ContextDialogOverlay" />
         <Dialog.Content className="ContextDialogContent">
           <Dialog.Title className="ContextDialogTitle">{title}</Dialog.Title>
-          <Tabs.Root className="TabsRoot" defaultValue="Consumer Pain Point">
-            <Tabs.List className="TabsList" aria-label="Context Tabs">
-              <Tabs.Trigger className="TabsTrigger" value="Consumer Pain Point">
+          <Tabs.Root className="ContextTabsRoot" defaultValue="Consumer Pain Point">
+            <Tabs.List className="ContextTabsList" aria-label="Context Tabs">
+              <Tabs.Trigger className="ContextTabsTrigger" value="Consumer Pain Point">
                 Consumer Pain Point
               </Tabs.Trigger>
-              <Tabs.Trigger className="TabsTrigger" value="Effort">
+              <Tabs.Trigger className="ContextTabsTrigger" value="Effort">
                 Effort
               </Tabs.Trigger>
-              <Tabs.Trigger className="TabsTrigger" value="Time">
+              <Tabs.Trigger className="ContextTabsTrigger" value="Time">
                 Time
               </Tabs.Trigger>
             </Tabs.List>
-            <Tabs.Content className="TabsContent" value="Consumer Pain Point">
+            <Tabs.Content className="ContextTabsContent" value="Consumer Pain Point">
               <h1 className="ContextTitle">Consumer pain point describes where the consumer could find issues with the idea -
                 this gives ideas to where solutions can be found</h1>
               <ul>
@@ -36,7 +36,7 @@ export default function ContextDialog({ content, title }) {
                 ))}
               </ul>
             </Tabs.Content>
-            <Tabs.Content className="TabsContent" value="Effort">
+            <Tabs.Content className="ContextTabsContent" value="Effort">
               <h1 className="ContextTitle">Effort describes what you should do to minimize the effort of your customers to use the platform</h1>
               <ul>
                 {content && content['Effort'].map((item, index) => (
@@ -44,7 +44,7 @@ export default function ContextDialog({ content, title }) {
                 ))}
               </ul>
             </Tabs.Content>
-            <Tabs.Content className="TabsContent" value="Time">
+            <Tabs.Content className="ContextTabsContent" value="Time">
               <h1 className="ContextTitle">Ways in which you can minimize the time delay of the consumer getting on board</h1>
               <ul>
                 {content && content['Time'].map((item, index) => (

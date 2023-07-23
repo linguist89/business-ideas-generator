@@ -20,18 +20,20 @@ function Header() {
 
   return (
     <header className="header">
-      <div className="logo">
-        <img src={HeaderImage} alt="Business Ideas logo" />
+      <div className="header-wrapper">
+        <div className="logo">
+          <img src={HeaderImage} alt="Business Ideas logo" />
+        </div>
+        {
+          user ?
+            <>
+              <div className="welcome-div">Welcome, {user.displayName ? user.displayName : user.email}</div>
+              <button className="transparent-button" onClick={() => signOut(auth)}>Logout</button>
+            </> :
+            <button className="transparent-button" onClick={() => setShowLoginDialog(true)}>Login</button>
+        }
+        <LoginDialog open={showLoginDialog} onClose={() => setShowLoginDialog(false)} />
       </div>
-      {
-        user ?
-          <>
-            <div className="welcome-div">Welcome, {user.displayName ? user.displayName : user.email}</div>
-            <button className="transparent-button" onClick={() => signOut(auth)}>Logout</button>
-          </> :
-          <button className="transparent-button" onClick={() => setShowLoginDialog(true)}>Login</button>
-      }
-      <LoginDialog open={showLoginDialog} onClose={() => setShowLoginDialog(false)} />
     </header>
   );
 };

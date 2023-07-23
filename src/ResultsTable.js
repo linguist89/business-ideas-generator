@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './ResultsTable.css';
 import { getContextInfoOpenAITest, getStartingInfoOpenAITest } from './HelperFunctions';
 import ContextDialog from './ContextDialog';
+import HowToDialog from './HowToDialog';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import logo from './static/images/site_logo.png';
@@ -127,6 +128,9 @@ function ResultsTable({ products, title }) {
             { text: `Description:\n ${product.description}\n\n` },
             { text: `Potential Clients:\n ${product.potentialClients}\n\n` },
             { text: `Where to find the clients:\n ${product.whereToFindClients}\n\n` },
+            { text: `Creating the product:\n ${product['Creating the product']}\n\n` },
+            { text: `Finding customers:\n ${product['Finding customers']}\n\n` },
+            { text: `Selling product:\n ${product['Selling product']}\n\n` },
             { text: `Consumer Pain Point:\n ${product['Consumer Pain Point'].map(obj => obj.point).join('\n')}\n\n` },
             { text: `Effort:\n ${product['Effort'].map(obj => obj.point).join('\n')}\n\n` },
             { text: `Time:\n ${product['Time'].map(obj => Object.values(obj)[0]).join('\n')}\n\n` },
@@ -198,15 +202,13 @@ function ResultsTable({ products, title }) {
                   </td>
                 </tr>
                 {selectedAccordionIndex === index && (
-                  <tr>
+                  <tr key={`accordion-${index}`}>
                     <td colSpan="5">
                       <div className="MoreInfoWrapper">
                         <div>
                           {
                             product['Creating the product'].length > 0 && product['Finding customers'].length > 0 && product['Selling product'].length > 0
-                              ? <button className="solid-card-button" onClick={() => {
-                                alert(`${product['Creating the product']}\n\n${product['Finding customers']}\n\n${product['Selling product']}`)
-                              }}>How to start</button>
+                              ? <HowToDialog content={product}></HowToDialog>
                               : startLoading[index]
                                 ? <span>Loading...</span>
                                 : <button
