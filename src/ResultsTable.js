@@ -261,9 +261,11 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
 
   return (
     <div className="ResultsTable">
-      <button className="solid-card-button" onClick={() => createAndDownloadPdf(title)}>
-        {creatingPdf ? 'Creating PDF...' : 'Download PDF for all ideas'}
-      </button>
+      <div className="DownloadButtonWrapper">
+        <button className="solid-card-button" onClick={() => createAndDownloadPdf(title)}>
+          {creatingPdf ? 'Creating PDF...' : 'Download PDF for all ideas'}
+        </button>
+      </div>
       <table id="table-section">
         <thead>
           <tr>

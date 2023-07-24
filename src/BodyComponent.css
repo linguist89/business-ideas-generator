@@ -49,7 +49,7 @@
   padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: bold;
-  text-decoration: underline;
+  border-bottom: 0.1rem solid #00000055;
 }
 
 .title {
@@ -92,6 +92,9 @@
 
 .generate-section, .previous-items-section{
   max-width: 30vw;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 0.4rem;
 }
 
 @media (max-width: 768px) {
