@@ -47,9 +47,14 @@
 
 .previous-items-title{
   padding-bottom: 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
   border-bottom: 0.1rem solid #00000055;
+}
+
+.idea-item{
+  display: flex;
+  align-items: flex-start;
 }
 
 .title {

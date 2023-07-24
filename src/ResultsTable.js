@@ -10,6 +10,7 @@ import { SelectedIdeaContext } from './BodyComponent';
 import { UserContext } from './App';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from './Firebase.js';
+import { ReactComponent as PdfIcon } from './static/images/PdfIcon.svg';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function sanitizeTitle(title) {
@@ -262,7 +263,8 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
   return (
     <div className="ResultsTable">
       <div className="DownloadButtonWrapper">
-        <button className="solid-card-button" onClick={() => createAndDownloadPdf(title)}>
+        <button className="solid-card-button PDFButton" onClick={() => createAndDownloadPdf(title)}>
+          <PdfIcon></PdfIcon>
           {creatingPdf ? 'Creating PDF...' : 'Download PDF for all ideas'}
         </button>
       </div>
@@ -328,9 +330,12 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
                           </div>
                         </div>
                         <div className="SinglePDFWrapper">
-                          <button className="SinglePDF solid-card-button" onClick={() => {
+                          <button className="SinglePDF solid-card-button PDFButton" onClick={() => {
                             singleIdeaPdf(product);
-                          }}>Download PDF for this idea</button>
+                          }}>
+                            <PdfIcon></PdfIcon>
+                            Download PDF for this idea
+                          </button>
                         </div>
                       </div>
                     </td>

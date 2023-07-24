@@ -1,3 +1,8 @@
+.PDFButton{
+    display: flex;
+    gap: 0.5rem;
+}
+
 .AccordionMenuWrapper{
     display: flex;
     justify-content: space-between;
@@ -21,9 +26,7 @@
     font-size: 1rem;
     max-width: 1920px;
     margin: 0 auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 0.4rem;
-    padding-top: 1rem;
+    margin-top: 2rem;
 }
 
 .ResultsTable table {
@@ -32,7 +35,8 @@
     width: 100%;
     border-radius: 0.4rem;
     overflow: hidden;
-    
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0.4rem;
 }
 
 .ResultsTable th, .ResultsTable td {
@@ -44,7 +48,7 @@
 
 .ResultsTable th {
     font-weight: bold;
-    background-color: #1F5668; 
+    background-color: #0e7490; 
     color: white;
 }
 

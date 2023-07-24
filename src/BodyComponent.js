@@ -12,6 +12,7 @@ import LoginDialog from './LoginDialog';
 import { db } from './Firebase.js';
 import { doc, setDoc, collection, query, getDocs, deleteDoc, addDoc } from 'firebase/firestore';
 import exampleIdeas from './exampleIdeas.json';
+import { ReactComponent as DeleteIcon } from './static/images/DeleteIcon.svg';
 
 export const SelectedIdeaContext = React.createContext();
 
@@ -169,7 +170,7 @@ function BodyComponent() {
         <div id="ideas-generator">
           <div className="previous-items-section">
             <h1 className="previous-items-title">
-              {user ? 'Previously generated ideas' : 'Check out some examples below'}
+              {user ? 'Previously generated ideas' : 'Check example ideas'}
             </h1>
             {user && previousIdeas && previousIdeas.length > 0 ?
               previousIdeas.map((idea, index) => (
@@ -179,10 +180,7 @@ function BodyComponent() {
                     {idea.data.focus}
                   </button>
                   <button className="delete-button" onClick={() => { deleteIdeaFromFirebase(idea.id); setPreviousIdeas(previousIdeas.filter(i => i.id !== idea.id)) }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#f70000" className="bi bi-trash-fill" viewBox="0 0 16 16" width="1rem" height="1rem">
-                      <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z" />
-                      <path fillRule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-.95-.68A1.993 1.993 0 0 0 8 1H6a1.993 1.993 0 0 0-.05.32A1 1 0 0 0 5 .32V1H2.5zm3 4a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5zM4.118 4L4.5 3.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.382-.5zm2 0a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5zm3 .5a.5.5 0 0 1-.5-.5h-.5a.5.5 0 0 1 0 1h.5a.5.5 0 0 1 .5-.5z" />
-                    </svg>
+                    <DeleteIcon></DeleteIcon>
                   </button>
                 </div>
               )) :
