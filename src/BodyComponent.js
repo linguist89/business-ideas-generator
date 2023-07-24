@@ -184,7 +184,7 @@ function BodyComponent() {
                   </button>
                 </div>
               )) :
-              user ? <p>You have no previously saved ideas</p> :
+              user ? <p className="TextTopPadding">You have no previously saved ideas</p> :
                 <ul className="IdeaExamplesWrapper">
                   {
                     exampleIdeas.map((exampleIdea, index) => (

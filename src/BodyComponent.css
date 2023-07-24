@@ -13,6 +13,10 @@
   align-self: center;
 }
 
+.TextTopPadding {
+  padding-top: 1rem;
+}
+
 .TextareaWrapper{
   display: flex;
   flex-direction: column;

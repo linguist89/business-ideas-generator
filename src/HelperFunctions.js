@@ -55,7 +55,6 @@ export async function getBusinessIdeasOpenAITest(focus, trends, cv) {
 }
 
 
-
 export async function getContextInfoOpenAITest(businessIdea) {
     let questions = {
         "Consumer Pain Point": "What are 10 consumer pain points in relation to this idea?",
