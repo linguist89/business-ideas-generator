@@ -1,7 +1,13 @@
+.AccordionMenuWrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .MoreInfoWrapper{
     display: flex;
     flex-direction: row;
     gap: 2rem;
+    align-items: center;
 }
 
 .ResultsTable {
@@ -15,7 +21,7 @@
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
-    border-radius: 10px;
+    border-radius: 0.4rem;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

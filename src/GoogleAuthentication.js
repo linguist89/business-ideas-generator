@@ -25,7 +25,7 @@ function GoogleAuthentication() {
   return (
     <div>
       {!user &&
-        <button className="transparent-purple-button google-button" onClick={() => signInWithPopup(auth, googleProvider)}>
+        <button className="transparent-black-button google-button" onClick={() => signInWithPopup(auth, googleProvider)}>
           <img src={GoogleLogo} alt="Google Logo" className="google-logo" />
           Sign in with Google
         </button>

@@ -1,7 +1,7 @@
 /* reset */
-button,
-fieldset,
-input {
+.HowToDialog button,
+.HowToDialog fieldset,
+.HowToDialog input {
     all: unset;
 }
 
@@ -28,6 +28,7 @@ input {
     max-height: 85vh;
     animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
     padding: 2rem;
+    z-index: 2;
 }
 
 

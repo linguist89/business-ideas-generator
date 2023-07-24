@@ -118,7 +118,7 @@
     box-shadow: none;
   }
   
-  .transparent-purple-button {
+  .transparent-green-button {
     display: inline-block;
     border: 1px solid #1F5668;
     border-radius: 0.4rem;
@@ -134,27 +134,71 @@
     color: #1F5668;
   }
   
-  .transparent-purple-button:hover {
+  .transparent-green-button:hover {
     background-color: transparent;
     border-color: #1F5668;
     color: #1F5668;
   }
   
-  .transparent-purple-button:focus {
+  .transparent-green-button:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(128, 0, 128, 0.5);
   }
   
-  .transparent-purple-button:active {
+  .transparent-green-button:active {
     background-color: transparent;
   }
   
-  .transparent-purple-button:disabled {
+  .transparent-green-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
   
-  .transparent-purple-button:focus:not(:focus-visible) {
+  .transparent-green-button:focus:not(:focus-visible) {
     box-shadow: none;
+  }
+  
+  .transparent-black-button {
+    display: inline-block;
+    border: 1px solid #000000;
+    border-radius: 0.4rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: transparent;
+    color: #000000;
+  }
+  
+  .transparent-black-button:hover {
+    background-color: transparent;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .transparent-black-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #000000;
+  }
+  
+  .transparent-black-button:active {
+    background-color: transparent;
+  }
+  
+  .transparent-black-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .transparent-black-button:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
+
+  .button-top-padding{
+    margin-top: 0.5rem;
   }
   

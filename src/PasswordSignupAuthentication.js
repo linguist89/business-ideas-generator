@@ -36,7 +36,7 @@ function PasswordSignupAuthentication() {
         onChange={(event) => handleInputChange(event, setPassword)}
         placeholder="Password"
       />
-      <button className="transparent-button" onClick={handleSignup}>Signup</button>
+      <button className="solid-card-button" onClick={handleSignup}>Signup</button>
       {error && <p>{error}</p>}
     </div>
   )

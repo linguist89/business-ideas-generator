@@ -25,20 +25,35 @@ export async function getContextInfo(product) {
 }
 
 export async function getBusinessIdeasOpenAITest(focus, trends, cv) {
+    console.log(focus);
+    console.log(trends);
+    console.log(cv);
     let question = "I'm looking to start a business and I need product or service ideas based on my cover letter. I have provided a focus (that which I want as my main purpose in the business), trends (the current business landscape where I live) and cover letter (the skills and competencies that I bring to the table). Give me product ideas, potential clients and where to find these clients based on these factors."
     let output_instructions = 'Give me 10 items and the output should be in the following JSON format: [{"product": "product name", "description": "product description", "potentialClients": " at least 5 potential clients", "whereToFindClients": " 5 places where to find clients"}, ...]. Do not number the items. NOTHING ELSE'
-    let full_prompt = `${question}\nFocus: ${focus}\nType: ${trends}\nCover Letter: ${cv}\n${output_instructions}`
-
-    const completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [
-            { "role": "system", "content": "You are a knowledgeable assistant." },
-            { role: "user", content: full_prompt }
-        ],
-        temperature: 1
-    });
-    return completion;
+    let full_prompt = `${question}\nFocus: ${focus}\nType: ${trends}\nCover Letter: ${cv}\n${output_instructions}`;
+    let attempts = 0;
+    while (attempts < 5) {
+        try {
+            const completion = await openai.createChatCompletion({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { "role": "system", "content": "You are a knowledgeable assistant." },
+                    { role: "user", content: full_prompt }
+                ],
+                temperature: 1
+            });
+            return completion;
+        } catch (error) {
+            console.error(`Attempt ${attempts + 1} failed. Error: ${error}`);
+            attempts++;
+        } finally {
+            if (attempts === 5) {
+                return { message: "There has been an error after 5 attempts" };
+            }
+        }
+    }
 }
+
 
 
 export async function getContextInfoOpenAITest(businessIdea) {

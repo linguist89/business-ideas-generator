@@ -76,28 +76,14 @@ function BodyComponent() {
     }
   }, [user]);
 
-  React.useEffect(() => {
-    const fetchIdeas = async () => {
-      if (user) {
-        const userIdeasRef = collection(db, 'users', user.uid, 'ideas');
-        const q = query(userIdeasRef);
-        const querySnapshot = await getDocs(q);
-        let allIdeas = [];
-        querySnapshot.forEach((doc) => {
-          allIdeas.push({ id: doc.id, data: doc.data() });
-        });
-        setPreviousIdeas(allIdeas);
-      }
-    }
-    fetchIdeas();
-  }, [user]);
-
   function loadIdea(ideaData) {
+
     setFocus(ideaData.data.focus);
     setIdeaResults(ideaData.data.ideas);
     setTrends(ideaData.data.trends);
     setCv(ideaData.data.cv);
     setSelectedIdea(ideaData.id);
+
   }
 
   async function deleteIdeaFromFirebase(ideaId) {
@@ -133,11 +119,15 @@ function BodyComponent() {
     } else {
       setIdeasLoading(true);
       setIdeaResults([]);
-      const results = await getBusinessIdeasOpenAITest(focus, trends, cv);
+      let checkedFocus = focus ? focus : "Random product or service";
+      let checkedTrends = trends ? trends : "Any customer";
+      let checkedCv = cv ? cv : "Various skills"
+      const results = await getBusinessIdeasOpenAITest(checkedFocus, checkedTrends, checkedCv);
       // Save tokens to Firebase
       updateFirebaseWithTokens(results);
 
       let response = results.data.choices[0].message.content;
+      console.log(response);
       let parsedResponse = JSON.parse(response);
       console.log(parsedResponse);
       // Adding the new fields to each object in the parsedResponse array
@@ -152,10 +142,10 @@ function BodyComponent() {
       }));
 
       setIdeaResults(parsedResponse);
-      const newIdeaID = await saveIdeasToFirebase({ focus, trends, cv, ideas: parsedResponse });
+      const newIdeaID = await saveIdeasToFirebase({ focus: checkedFocus, trends: checkedTrends, cv: checkedCv, ideas: parsedResponse });
       setIdeasLoading(false);
       setSelectedIdea(newIdeaID);
-      setPreviousIdeas(prevIdeas => [{ id: newIdeaID, data: { focus, trends, cv, ideas: parsedResponse } }, ...prevIdeas]);
+      setPreviousIdeas(prevIdeas => [{ id: newIdeaID, data: { focus: checkedFocus, trends: checkedTrends, cv: checkedCv, ideas: parsedResponse } }, ...prevIdeas]);
     }
   }
 
@@ -197,33 +187,41 @@ function BodyComponent() {
                 </div>
               )) :
               user ? <p>You have no previously saved ideas</p> :
-                exampleIdeas.map((exampleIdea, index) => (
-                  <button className={`button-link`} key={index} onClick={() => loadIdea({ data: exampleIdea })}>
-                    {exampleIdea.focus}
-                  </button>
-                ))
+                <ul className="IdeaExamplesWrapper">
+                  {
+                    exampleIdeas.map((exampleIdea, index) => (
+                      <li key={index}>
+                        <button className={`button-link`} onClick={() => loadIdea({ data: exampleIdea })}>
+                          {exampleIdea.focus}
+                        </button>
+                      </li>
+                    ))
+                  }
+                </ul>
             }
           </div>
-          <div className="generate-section">
+          <div className="generate-section" disabled={ideasLoading}>
             <h1 className="previous-items-title">Generate new ideas</h1>
-            <CustomTextarea
-              instructions="What do you want to do?"
-              placeholder="What do you want to do?"
-              infoSetter={setFocus}
-              value={focus || "I want to make and sell eco-friendly candles"}
-            ></CustomTextarea>
-            <CustomTextarea
-              instructions="What type of people are you hoping to sell to?"
-              placeholder="What type of people are you hoping to sell to?"
-              infoSetter={setTrends}
-              value={trends || "Where I live people have high literacy, knowledge of the internet and high earning potential."}
-            ></CustomTextarea>
-            <CustomTextarea
-              instructions="What are the 3 or 4 skills you want to focus on?"
-              placeholder="What are the 3 or 4 skills you want to focus on?"
-              infoSetter={setCv}
-              value={cv || "DIY skills, Video Editing Skills and Danish language skills"}
-            ></CustomTextarea>
+            <div className="TextareaWrapper">
+              <CustomTextarea
+                instructions="What do you want to do?"
+                placeholder="What do you want to do? (Leave blank for random ideas)"
+                infoSetter={setFocus}
+                value={focus ? focus : ""}
+              ></CustomTextarea>
+              <CustomTextarea
+                instructions="What type of people are you hoping to sell to?"
+                placeholder="What type of people are you hoping to sell to? (Leave blank for random ideas)"
+                infoSetter={setTrends}
+                value={trends ? trends : ""}
+              ></CustomTextarea>
+              <CustomTextarea
+                instructions="What are the 3 or 4 skills you want to focus on?"
+                placeholder="What are the 3 or 4 skills you want to focus on? (Leave blank for random ideas)"
+                infoSetter={setCv}
+                value={cv ? cv : ""}
+              ></CustomTextarea>
+            </div>
             <div className="BodyComponentButtonDiv">
               <button
                 className="solid-card-button"
@@ -239,7 +237,7 @@ function BodyComponent() {
           {
             ideaResults.length > 0 ?
               <SelectedIdeaContext.Provider value={{ selectedIdea, setSelectedIdea }}>
-                <ResultsTable key="ResultsTable" products={ideaResults} title={focus} />
+                <ResultsTable key="ResultsTable" products={ideaResults} title={focus} setShowLoginDialog={setShowLoginDialog} />
               </SelectedIdeaContext.Provider> :
               ideasLoading && <Spinner></Spinner>
           }

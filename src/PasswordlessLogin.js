@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { UserContext } from './App';
+import './Buttons.css';
 
 const actionCodeSettings = {
   url: 'http://localhost:3000/',
@@ -64,14 +65,14 @@ function LoginWithEmailLink() {
   return (
     <div>
       {!showInput &&
-        <button className="transparent-purple-button google-button" onClick={handleClick}>
+        <button className="transparent-black-button google-button" onClick={handleClick}>
           Login with email link
         </button>
       }
       {showInput &&
         <div>
-          <input type="email" value={email} onChange={handleEmailChange} />
-          <button className="transparent-purple-button google-button" onClick={handleClick}>
+          <input type="email" value={email} onChange={handleEmailChange} placeholder='Email Address' />
+          <button className="solid-card-button google-button button-top-padding" onClick={handleClick}>
             Send link
           </button>
         </div>

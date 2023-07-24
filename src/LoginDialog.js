@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import './LoginDialog.css';
@@ -8,9 +8,19 @@ import LoginWithEmailLink from './PasswordlessLogin';
 import PasswordSignupAuthentication from './PasswordSignupAuthentication';
 import PasswordLoginAuthentication from './PasswordLoginAuthentication';
 import OrLine from './OrLine';
+import { UserContext } from './App';
+
+export const SelectedIdeaContext = React.createContext();
 
 function LoginDialog({ open, onClose }) {
-  const [showSignup, setShowSignup] = useState(false);
+  const { user } = React.useContext(UserContext);
+  const [showSignup, setShowSignup] = React.useState(false);
+
+  React.useEffect(() => {
+    if (user) {
+      onClose(false);
+    }
+  }, [user, onClose]);
 
   return (
     <Dialog.Root open={open} onOpenChange={onClose}>

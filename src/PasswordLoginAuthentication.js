@@ -14,7 +14,8 @@ function PasswordLoginAuthentication() {
     setter(event.target.value);
   }
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
@@ -23,22 +24,24 @@ function PasswordLoginAuthentication() {
   }
 
   return (
-    <div className="authentication-form">
+    <form className="authentication-form" onSubmit={handleLogin}>
       <input
         type="email"
         value={email}
         onChange={(event) => handleInputChange(event, setEmail)}
         placeholder="Email"
+        autoComplete="username"
       />
       <input
         type="password"
         value={password}
         onChange={(event) => handleInputChange(event, setPassword)}
         placeholder="Password"
+        autoComplete="current-password"
       />
-      <button className="solid-card-button" onClick={handleLogin}>Login</button>
+      <button type="submit" className="solid-card-button">Login</button>
       {error && <p>{error}</p>}
-    </div>
+    </form>
   )
 }
 
