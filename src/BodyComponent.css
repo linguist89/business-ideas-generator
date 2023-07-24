@@ -60,7 +60,7 @@
 
 @media (max-width: 768px) {
   #ideas-generator {
-    flex-direction: column-reverse;
+    flex-direction: column;
     padding: 1rem 1rem 1rem 1rem;
   }
 
