@@ -16,7 +16,6 @@ export default function PricingDialog() {
             const productsQuery = query(collection(db, 'products'), where('active', '==', true));
             const querySnapshot = await getDocs(productsQuery);
             for (const docSnapshot of querySnapshot.docs) {
-
                 const priceSnap = await getDocs(collection(doc(db, 'products', docSnapshot.id), 'prices'));
                 if (!priceSnap.empty) {
                     const priceDoc = priceSnap.docs[0]; // take the first price document
