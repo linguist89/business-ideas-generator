@@ -13,6 +13,12 @@
   align-self: center;
 }
 
+.ListButtonAlignment{
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  text-align: left;
+}
+
 .TextTopPadding {
   padding-top: 1rem;
 }
@@ -59,6 +65,7 @@
 .idea-item{
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
 .title {

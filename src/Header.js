@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
-import { UserContext } from './App';
-import { auth } from './Firebase.js';
+import { UserContext, CreditContext } from './App';
+import { auth, db } from './Firebase.js';
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import HeaderImage from './static/images/site_logo.png';
 import LoginDialog from './LoginDialog.js';
-import { db } from './Firebase.js';
-import { doc, increment, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import PricingDialog from './PricingDialog';
+import BuyCreditsDialog from './BuyCreditsDialog';
 
 function Header() {
   const { user, setUser } = React.useContext(UserContext);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [credits, setCredits] = useState(0);
+  const { credits, setCredits } = React.useContext(CreditContext);
+  const plans = [
+    { title: 'Free Plan', price: 'Free', features: ['100 credits once off'] },
+    { title: 'Basic Plan', price: '$20/mo', features: ['500 credits per month'] },
+    { title: 'Pro Plan', price: '$30/mo', features: ['1000 credits per month'] },
+  ];
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const userCreditsRef = doc(db, 'users', currentUser.uid, 'credits', 'total');
+        const userCreditsRef = doc(db, 'customers', currentUser.uid, 'credits', 'total');
         getDoc(userCreditsRef).then((docSnap) => {
           if (docSnap.exists()) {
-            setCredits(docSnap.data().amount);
+            let creditAmount = docSnap.data().amount;
+            creditAmount = creditAmount < 0 ? 0 : creditAmount;
+            setCredits(creditAmount);
           } else {
             setDoc(userCreditsRef, { amount: 100 }, { merge: true });
             setCredits(100);
@@ -31,19 +39,6 @@ function Header() {
 
     return () => unsubscribe();
   }, [setUser]);
-
-  async function addCredits() {
-    try {
-      const userCreditsRef = doc(db, 'users', user.uid, 'credits', 'total');
-      await setDoc(userCreditsRef, { amount: increment(500) }, { merge: true });
-      setCredits(credits + 500);
-      console.log("Credits successfully updated!");
-      alert(`You've successfully purchased ${500} credits`);
-    } catch (error) {
-      console.error("Error updating credits: ", error);
-      alert(`There has been an error with your purchase`);
-    }
-  }
 
   return (
     <header className="header">
@@ -56,7 +51,8 @@ function Header() {
           {
             user
               ? <>
-                <button className="transparent-button" onClick={addCredits}>Buy Credits</button>
+                <PricingDialog plans={plans} />
+                <BuyCreditsDialog></BuyCreditsDialog>
                 <button className="transparent-button" onClick={() => signOut(auth)}>Logout</button>
               </>
               : <button className="transparent-button" onClick={() => setShowLoginDialog(true)}>Login</button>

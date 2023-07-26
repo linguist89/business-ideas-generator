@@ -1,4 +1,6 @@
 import { openai } from './OpenAI.js';
+import { db } from './Firebase.js';
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 
 export async function getBusinessIdeas(inputString) {
     const response = await fetch(`https://business-ideas.anvil.app/_/api/business_ideas`, {
@@ -56,35 +58,25 @@ export async function getBusinessIdeasOpenAITest(focus, trends, cv) {
 
 
 export async function getContextInfoOpenAITest(businessIdea) {
-    let questions = {
-        "Consumer Pain Point": "What are 10 consumer pain points in relation to this idea?",
-        "Effort": "What are 10 things that can be done to minimize the consumers effort in getting the solution?",
-        "Time": "What are 10 things that can be done to minimize the consumers time in getting the solution?"
-    };
-
     let businessIdeaString = Object.entries(businessIdea).map(([key, value]) => `${key}: ${value}`).join('\n');
-    let output_instructions = 'Give me 10 items and the output should be in the following JSON format: [{"point": "description"}, ...]. Do not number the items. NOTHING ELSE'
-    let tempResultsDict = {};
+    //let question = 'Give me 10 items and the output should be in the following JSON format: [{"point": "description"}, ...]. Do not number the items. NOTHING ELSE'
+    let question = "From the idea above, give the outline in the following structure. The output should be a dictionary as is described below:\n{\n\"Consumer Pain Point\": \"What are consumer pain points in relation to this idea?\",\n\"Effort\": \"What are things that can be done to minimize the consumers effort in getting the solution?\",\n\"Time\": \"What are things that can be done to minimize the consumers time in getting the solution?\"\n}"
+    let content = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+            { "role": "system", "content": "You are a knowledgeable assistant." },
+            { "role": "user", "content": `${question}\n${businessIdeaString}` }
+        ],
+        temperature: 1
+    });
 
-    for (let [title, question] of Object.entries(questions)) {
-        let content = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [
-                { "role": "system", "content": "You are a knowledgeable assistant." },
-                { "role": "user", "content": `${question}\n${businessIdeaString}\n${output_instructions}` }
-            ],
-            temperature: 1
-        });
-
-        // Check if 'content' and 'content.choices' exist and it's not empty, then only access the 'message.content'.
-        if (content) {
-            tempResultsDict[title] = content.data.choices[0].message.content;
-        } else {
-            console.log('Error: No content or choices available.');
-        }
+    // Check if 'content' and 'content.choices' exist and it's not empty, then only access the 'message.content'.
+    if (content) {
+        return (content);
+    } else {
+        console.log('Error: No content or choices available.');
     }
 
-    return tempResultsDict;
 }
 
 
@@ -102,9 +94,36 @@ export async function getStartingInfoOpenAITest(product) {
 
     // Check if 'content' and 'content.choices' exist and it's not empty, then only access the 'message.content'.
     if (content) {
-        return JSON.parse(content.data.choices[0].message.content);
+        return content
     } else {
         console.log('Error: No content or choices available.');
     }
 }
 
+/* Save to Firebase the token usage details */
+async function saveTokensToFirebase(tokens) {
+    try {
+        const tokensCollectionRef = collection(db, 'usage');
+        const newTokenDoc = await addDoc(tokensCollectionRef, tokens);
+        console.log("Documents successfully written!", newTokenDoc.id);
+    } catch (error) {
+        console.error("Error writing documents: ", error);
+    }
+}
+
+// Function to update Firebase Firestore with used tokens
+export async function updateFirebaseWithTokens(completion, credits, setCredits, user) {
+    const completion_data = {
+        'model': completion.data.model,
+        //'model': 'gpt-3.5-turbo',
+        //This needs to be fixed completion isn't the completion, but rather the results
+        'usage': completion.data.usage,
+        'timestamp': new Date()
+    };
+    const newTotal = credits - Math.round(completion.data.usage.total_tokens / 10);
+    setCredits(newTotal); // Deduct the usage from total credits
+
+    const userCreditsRef = doc(db, 'customers', user.uid, 'credits', 'total');
+    await setDoc(userCreditsRef, { amount: newTotal }, { merge: true });
+    await saveTokensToFirebase(completion_data);
+}

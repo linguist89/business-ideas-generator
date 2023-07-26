@@ -2,7 +2,7 @@ import './BodyComponent.css';
 import './index.css';
 import CustomTextarea from './CustomTextarea';
 import React from 'react';
-import { getBusinessIdeasOpenAITest } from './HelperFunctions';
+import { getBusinessIdeasOpenAITest, updateFirebaseWithTokens } from './HelperFunctions';
 import LandingImage from './static/images/lighbulb_shadow.png';
 import ResultsTable from './ResultsTable';
 import Spinner from './Spinner';
@@ -10,14 +10,16 @@ import './Buttons.css';
 import { UserContext } from './App';
 import LoginDialog from './LoginDialog';
 import { db } from './Firebase.js';
-import { doc, setDoc, collection, query, getDocs, deleteDoc, addDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, getDocs, deleteDoc } from 'firebase/firestore';
 import exampleIdeas from './exampleIdeas.json';
 import { ReactComponent as DeleteIcon } from './static/images/DeleteIcon.svg';
+import { CreditContext } from './App';
 
 export const SelectedIdeaContext = React.createContext();
 
 function BodyComponent() {
   const { user } = React.useContext(UserContext);
+  const { credits, setCredits } = React.useContext(CreditContext);
   const [showLoginDialog, setShowLoginDialog] = React.useState(false);
   const [focus, setFocus] = React.useState();
   const [trends, setTrends] = React.useState();
@@ -27,26 +29,6 @@ function BodyComponent() {
   const [previousIdeas, setPreviousIdeas] = React.useState([]);
   const [selectedIdea, setSelectedIdea] = React.useState(null);
 
-  /* Save to Firebase the token usage details */
-  async function saveTokensToFirebase(tokens) {
-    try {
-      const tokensCollectionRef = collection(db, 'your_collection_name');
-      const newTokenDoc = await addDoc(tokensCollectionRef, tokens);
-      console.log("Documents successfully written!", newTokenDoc.id);
-    } catch (error) {
-      console.error("Error writing documents: ", error);
-    }
-  }
-
-  // Function to update Firebase Firestore with used tokens
-  async function updateFirebaseWithTokens(completion) {
-    const completion_data = {
-      'model': completion.data.model,
-      'usage': completion.data.usage,
-      'timestamp': new Date()
-    };
-    await saveTokensToFirebase(completion_data);
-  }
 
   React.useEffect(() => {
     if (user && previousIdeas.length > 0) {
@@ -64,7 +46,7 @@ function BodyComponent() {
       setCv(null);
     } else {
       const fetchIdeas = async () => {
-        const userIdeasRef = collection(db, 'users', user.uid, 'ideas');
+        const userIdeasRef = collection(db, 'customers', user.uid, 'ideas');
         const q = query(userIdeasRef);
         const querySnapshot = await getDocs(q);
         let allIdeas = [];
@@ -88,7 +70,7 @@ function BodyComponent() {
   }
 
   async function deleteIdeaFromFirebase(ideaId) {
-    const ideaRef = doc(db, 'users', user.uid, 'ideas', ideaId);
+    const ideaRef = doc(db, 'customers', user.uid, 'ideas', ideaId);
     await deleteDoc(ideaRef);
   }
 
@@ -96,14 +78,14 @@ function BodyComponent() {
     const element = document.getElementById('ideas-generator');
     const rect = element.getBoundingClientRect();
     window.scrollTo({
-      top: rect.top - 70,
+      top: rect.top - 120,
       behavior: 'smooth'
     });
   };
 
   async function saveIdeasToFirebase(searchData) {
     try {
-      const userIdeasRef = collection(db, 'users', user.uid, 'ideas');
+      const userIdeasRef = collection(db, 'customers', user.uid, 'ideas');
       const newIdeaDoc = doc(userIdeasRef);
       await setDoc(newIdeaDoc, searchData);
       console.log("Documents successfully written!");
@@ -124,14 +106,10 @@ function BodyComponent() {
       let checkedTrends = trends ? trends : "Any customer";
       let checkedCv = cv ? cv : "Various skills"
       const results = await getBusinessIdeasOpenAITest(checkedFocus, checkedTrends, checkedCv);
-      // Save tokens to Firebase
-      updateFirebaseWithTokens(results);
+      await updateFirebaseWithTokens(results, credits, setCredits, user);
 
       let response = results.data.choices[0].message.content;
-      console.log(response);
       let parsedResponse = JSON.parse(response);
-      console.log(parsedResponse);
-      // Adding the new fields to each object in the parsedResponse array
       parsedResponse = parsedResponse.map(item => ({
         ...item,
         'Consumer Pain Point': [],
@@ -175,11 +153,11 @@ function BodyComponent() {
             {user && previousIdeas && previousIdeas.length > 0 ?
               previousIdeas.map((idea, index) => (
                 <div key={index} className="idea-item">
-                  <button className={`button-link ${idea.id === selectedIdea ? 'selected-idea' : ''}`}
+                  <button disabled={ideasLoading} className={`ListButtonAlignment button-link ${idea.id === selectedIdea ? 'selected-idea' : ''}`}
                     onClick={() => loadIdea(idea)}>
                     {idea.data.focus}
                   </button>
-                  <button className="delete-button" onClick={() => { deleteIdeaFromFirebase(idea.id); setPreviousIdeas(previousIdeas.filter(i => i.id !== idea.id)) }}>
+                  <button disabled={ideasLoading} className="delete-button" onClick={() => { deleteIdeaFromFirebase(idea.id); setPreviousIdeas(previousIdeas.filter(i => i.id !== idea.id)) }}>
                     <DeleteIcon></DeleteIcon>
                   </button>
                 </div>
@@ -189,7 +167,7 @@ function BodyComponent() {
                   {
                     exampleIdeas.map((exampleIdea, index) => (
                       <li key={index}>
-                        <button className={`button-link`} onClick={() => loadIdea({ data: exampleIdea })}>
+                        <button className="button-link" onClick={() => loadIdea({ data: exampleIdea })}>
                           {exampleIdea.focus}
                         </button>
                       </li>

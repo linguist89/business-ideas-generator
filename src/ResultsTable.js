@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ResultsTable.css';
-import { getContextInfoOpenAITest, getStartingInfoOpenAITest } from './HelperFunctions';
+import { getContextInfoOpenAITest, getStartingInfoOpenAITest, updateFirebaseWithTokens } from './HelperFunctions';
 import ContextDialog from './ContextDialog';
 import HowToDialog from './HowToDialog';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -11,6 +11,8 @@ import { UserContext } from './App';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from './Firebase.js';
 import { ReactComponent as PdfIcon } from './static/images/PdfIcon.svg';
+import { CreditContext } from './App';
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function sanitizeTitle(title) {
@@ -20,7 +22,9 @@ function sanitizeTitle(title) {
 
 function ResultsTable({ products, title, setShowLoginDialog }) {
   const { user } = React.useContext(UserContext);
+  const { credits, setCredits } = React.useContext(CreditContext);
   const [ideaContexts, setIdeaContexts] = React.useState([]);
+  const [howToStart, setHowToStart] = React.useState([]);
   const [loading, setLoading] = React.useState({});
   const [startLoading, setStartLoading] = React.useState({});
   const [creatingPdf, setCreatingPdf] = React.useState(false);
@@ -40,29 +44,33 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
       });
   }, []);
 
+
   async function handleStartButtonClick(product, index, retryCount = 0) {
     if (!user) {
       setShowLoginDialog(true);
     } else {
-      if (ideaContexts[index] && ideaContexts[index]['Creating the product']) {
-        alert(JSON.stringify(ideaContexts[index]));
+      if (howToStart[index] && howToStart[index]['Creating the product']) {
+        alert(JSON.stringify(howToStart[index]));
       } else {
         setStartLoading(prevStartLoading => ({ ...prevStartLoading, [index]: true }));
         try {
           const results = await getStartingInfoOpenAITest(product);
+          let howToStartResults = JSON.parse(results.data.choices[0].message.content);
           console.log("Results");
-          console.log(results);
+          console.log(howToStartResults);
 
-          setIdeaContexts(prevTasks => {
+
+          setHowToStart(prevTasks => {
             const newTasks = [...prevTasks];
-            newTasks[index] = { ...newTasks[index], ...results };
+            newTasks[index] = { ...newTasks[index], ...howToStartResults };
             return newTasks;
           });
 
-          const ideaDoc = doc(db, 'users', user.uid, 'ideas', selectedIdea);
+          const ideaDoc = doc(db, 'customers', user.uid, 'ideas', selectedIdea);
           await updateDoc(ideaDoc, {
-            ideas: products.map((p, i) => i === index ? { ...p, ...results } : p)
+            ideas: products.map((p, i) => i === index ? { ...p, ...howToStartResults } : p)
           });
+          await updateFirebaseWithTokens(results, credits, setCredits, user);
         } catch (error) {
           console.error(error);
           if (retryCount < 5) {
@@ -86,29 +94,24 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
         setLoading(prevLoading => ({ ...prevLoading, [index]: true }));
         try {
           const results = await getContextInfoOpenAITest(product);
-          console.log("Results");
+          console.log("Raw results:");
           console.log(results);
-          const parsedResults = {
-            "Consumer Pain Point": JSON.parse(results["Consumer Pain Point"]),
-            "Effort": JSON.parse(results["Effort"]),
-            "Time": JSON.parse(results["Time"])
-          };
+          let optimizedResults = JSON.parse(results.data.choices[0].message.content);
+          console.log("Results");
+          console.log(optimizedResults);
 
-          // Check that all results have a length greater than 0
-          if (!(parsedResults["Consumer Pain Point"].length > 0 && parsedResults["Effort"].length > 0 && parsedResults["Time"].length > 0)) {
-            throw new Error('One or more fields are empty');
-          }
 
           setIdeaContexts(prevTasks => {
             const newTasks = [...prevTasks];
-            newTasks[index] = parsedResults;
+            newTasks[index] = optimizedResults;
             return newTasks;
           });
 
-          const ideaDoc = doc(db, 'users', user.uid, 'ideas', selectedIdea);
+          const ideaDoc = doc(db, 'customers', user.uid, 'ideas', selectedIdea);
           await updateDoc(ideaDoc, {
-            ideas: products.map((p, i) => i === index ? { ...p, ...parsedResults } : p)
+            ideas: products.map((p, i) => i === index ? { ...p, ...optimizedResults } : p)
           });
+          await updateFirebaseWithTokens(results, credits, setCredits, user);
         } catch (error) {
           console.error(error);
           if (retryCount < 5) {
@@ -307,10 +310,12 @@ function ResultsTable({ products, title, setShowLoginDialog }) {
                                 ? <HowToDialog content={product}></HowToDialog>
                                 : startLoading[index]
                                   ? <span>Loading...</span>
-                                  : <button
-                                    onClick={() => handleStartButtonClick(product, index)}
-                                    className="solid-card-button"
-                                  >Find out how to start</button>
+                                  : howToStart[index]
+                                    ? <HowToDialog content={howToStart[index]}></HowToDialog>
+                                    : <button
+                                      onClick={() => handleStartButtonClick(product, index)}
+                                      className="solid-card-button"
+                                    >Find out how to start</button>
                             }
 
                           </div>

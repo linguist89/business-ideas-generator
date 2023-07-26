@@ -16,7 +16,7 @@ export default function ContextDialog({ content, title }) {
         <Dialog.Content className="ContextDialogContent">
           <Dialog.Title className="ContextDialogTitle">{title}</Dialog.Title>
           <Tabs.Root className="ContextTabsRoot" defaultValue="Consumer Pain Point">
-            <Tabs.List className="ContextTabsList" aria-label="Context Tabs">
+            <Tabs.List className="ContextTabsList" aria-label="How To Tabs">
               <Tabs.Trigger className="ContextTabsTrigger" value="Consumer Pain Point">
                 Consumer Pain Point
               </Tabs.Trigger>
@@ -28,31 +28,14 @@ export default function ContextDialog({ content, title }) {
               </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="ContextTabsContent" value="Consumer Pain Point">
-              <h1 className="ContextTitle">Consumer pain point describes where the consumer could find issues with the idea -
-                this gives ideas to where solutions can be found</h1>
-              <ul>
-                {content && content['Consumer Pain Point'].map((item, index) => (
-                  <li className="ListItem" key={index}>{item.point}</li>
-                ))}
-              </ul>
+              {content && <p key={Math.random()}>{content['Consumer Pain Point']}</p>}
             </Tabs.Content>
             <Tabs.Content className="ContextTabsContent" value="Effort">
-              <h1 className="ContextTitle">Effort describes what you should do to minimize the effort of your customers to use the platform</h1>
-              <ul>
-                {content && content['Effort'].map((item, index) => (
-                  <li className="ListItem" key={index}>{item.point}</li>
-                ))}
-              </ul>
+              {content && <p key={Math.random()}>{content['Effort']}</p>}
             </Tabs.Content>
             <Tabs.Content className="ContextTabsContent" value="Time">
-              <h1 className="ContextTitle">Ways in which you can minimize the time delay of the consumer getting on board</h1>
-              <ul>
-                {content && content['Time'].map((item, index) => (
-                  <li className="ListItem" key={index}>{item.point}</li>
-                ))}
-              </ul>
+              {content && <p key={Math.random()}>{content['Time']}</p>}
             </Tabs.Content>
-
           </Tabs.Root>
           <div style={{ display: 'flex', marginTop: 25, justifyContent: 'flex-end' }}>
             <Dialog.Close asChild>
@@ -67,5 +50,5 @@ export default function ContextDialog({ content, title }) {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }
