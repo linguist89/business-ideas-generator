@@ -38,6 +38,7 @@ function Header() {
     });
 
     return () => unsubscribe();
+    // eslint-disable-next-line
   }, [setUser]);
 
   return (
